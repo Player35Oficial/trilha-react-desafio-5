@@ -1,7 +1,5 @@
 import { getGlobalData } from '../../utils/global-data';
-import {
-  getPostBySlug,
-} from '../../utils/mdx-utils';
+import { getPostBySlug } from '../../utils/mdx-utils';
 
 import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
@@ -13,16 +11,12 @@ import Header from '../../components/Header';
 import Layout, { GradientBackground } from '../../components/Layout';
 import SEO from '../../components/SEO';
 
-
 const components = {
   a: CustomLink,
   Head,
 };
 
-export default function PostPage({
-  posts,
-  globalData,
-}) {
+export default function PostPage({ posts, globalData }) {
   return (
     <Layout>
       <SEO
@@ -30,21 +24,24 @@ export default function PostPage({
         description={posts.description}
       />
       <Header name={globalData.name} />
-      <article className="px-6 md:px-0">
-        <header>
-          <h1 className="text-3xl md:text-5xl dark:text-white text-center mb-12">
-            {posts?.title}
-          </h1>
-          {posts?.description && (
-            <p className="text-xl mb-4">{posts?.description}</p>
-          )}
-        </header>
-        <main>
-          <article className="prose dark:prose-dark">
-            {posts.body}
-          </article>
-        </main>
-      </article>
+      {posts ? (
+        <article className="px-6 md:px-0">
+          <header>
+            <h1 className="text-3xl md:text-5xl dark:text-white text-center mb-12">
+              {posts?.title}
+              {posts.map((post) => post?.title)}
+            </h1>
+            {posts[0]?.description && (
+              <p className="text-xl mb-4">
+                {posts.map((post) => post.description)}
+              </p>
+            )}
+          </header>
+          <main>
+            <article className="prose dark:prose-dark">{posts.body}</article>
+          </main>
+        </article>
+      ) : null}
       <Footer copyrightText={globalData.footerText} />
       <GradientBackground
         variant="large"
@@ -61,7 +58,8 @@ export default function PostPage({
 export const getServerSideProps = async ({ params }) => {
   const globalData = getGlobalData();
   const posts = await getPostBySlug(params.id);
- 
+
+  console.log(posts);
 
   return {
     props: {
@@ -70,4 +68,3 @@ export const getServerSideProps = async ({ params }) => {
     },
   };
 };
-
